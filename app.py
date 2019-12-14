@@ -53,7 +53,7 @@ def find_nearest():
 def park_car(name):
     uid = uuid.uuid4().hex
     name = name.upper()
-    t = str(datetime.now())
+    t = datetime.now()
     print(name, uid, t)
 
     cur.execute('SELECT COUNT(*) FROM parking_history WHERE garagecode = ?', (name,))
@@ -61,10 +61,10 @@ def park_car(name):
     if cur.fetchall()[0][0] == 0:
         return '0'
 
-    cur.execute('INSERT INTO parked_cars (parking_id, uuid, time) VALUES ((SELECT _id FROM parking_history WHERE garagecode = ?), ?, ?)', (name, uid, t))
+    cur.execute('INSERT INTO parked_cars (parking_id, uuid, time) VALUES ((SELECT _id FROM parking_history WHERE garagecode = ?), ?, ?)', (name, uid, str(t)))
     c.commit()
 
-    return {'uuid': uid, 'timestamp': t}
+    return {'uuid': uid, 'timestamp': t.timestamp()}
 
 @app.route('/pay', methods=['POST'])
 def pay():
