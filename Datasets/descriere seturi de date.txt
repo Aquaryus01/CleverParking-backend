@@ -1,0 +1,25 @@
+Parking
+- conţine date despre evoluţia numărului de autoturisme din mai multe parcări supra-etajate;
+- setul de date conţine informaţii despre:
+	- numărul curent de autoturisme;
+	- numărul total de autoturisme;
+	- numele parcării;
+	- momentul în care s-a realizat achiziţia.
+	
+Pollution
+- conţine date obţinute în urma monitorizării poluării într-un oraş;
+- datele sunt obţinute de la mai mulţi senzori la diferite momente de timp;
+
+Vehicle Traffic
+- în aproximatv 500 de puncte ale unui oraş  este măsurată evoluţia traficului;
+- fiecare senzor raportează cu o perioadă de 5 minute numărul de autorurisme care au trecut prin dreptul acestuia, respectiv viteza medie a autoturismelor.
+
+Weather
+- staţia meteo a unui oraş montorizează evolutia vremii
+- următorii parametri sunt monitorizaţi:
+	- Dew point in degrees Celsius;
+	- Humidity (percentage);
+	- Pressure in mBar;
+	- Temperature in degrees Celsius;
+	- Wind direction in degrees;
+	- Wind speed in kilometers per hour (kph)
