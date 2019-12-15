@@ -33,7 +33,7 @@ def find_nearest():
 
         temp = {'name': p[0], 'lat': p[1], 'long': p[2], 'distance': d}
 
-        cur.execute('SELECT AVG(vehiclecount*100/totalspaces) FROM parking_history WHERE TIME(updatetime) < TIME(?) AND TIME(updatetime) > TIME(?) AND garagecode = ?;', (f'{data["hour"]+1}:00:00', f'{data["hour"]}:00:00', temp['name']))
+        cur.execute('SELECT AVG(vehiclecount*100/totalspaces) FROM parking_history WHERE TIME(updatetime) < TIME(?) AND TIME(updatetime) > TIME(?) AND garagecode = ?;', (f'{str(int(data["hour"])+1).rjust(2, "0")}:00:00', f'{str(int(data["hour"])).rjust(2, "0")}:00:00', temp['name']))
         temp['full'] = cur.fetchall()[0][0]
 
         cur.execute('SELECT totalspaces FROM parking_history WHERE garagecode = ? LIMIT 1;', (p[0],))
@@ -42,8 +42,12 @@ def find_nearest():
         cur.execute('SELECT COUNT(*) FROM parked_cars WHERE parking_id = (SELECT _id FROM parking_history WHERE garagecode = ? LIMIT 1)', (p[0],))
         temp['now_cars'] = cur.fetchall()[0][0]
 
+        cur.execute('SELECT price FROM parkings WHERE name = ?', (temp['name'],))
+        temp['price'] = cur.fetchall()[0][0]
+
         temp['address'] = gmaps.geocode(p[0])[0]['formatted_address']
 
+        print(temp)
         to_send.append(temp)
 
     return {'response': to_send}
