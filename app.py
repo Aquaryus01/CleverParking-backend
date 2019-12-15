@@ -23,29 +23,31 @@ def calc_dist(a, b):
 @app.route('/find_nearest', methods=['POST'])
 def find_nearest():
     data = request.get_json(force=True)
-    closest = []
+    to_send = []
 
-    for p1, p in parking.iterrows():
-        if p1 == len(parking):
-            break
+    cur.execute('SELECT name, lat, long FROM parkings')
+    lines = cur.fetchall()
 
-        d = calc_dist(data, p)
-        if [d, {'name': p['garagecode'], 'lat': p['lat'], 'long': p['long'], 'distance': d}] not in closest:
-            closest.append([d, {'name': p['garagecode'], 'lat': p['lat'], 'long': p['long'], 'distance': d}])
+    for p in lines:
+        d = calc_dist(data, {'lat': p[1], 'long': p[2]})
 
-    for idx, (j, i) in enumerate(closest):
-        cur.execute('SELECT AVG(vehiclecount*100/totalspaces) FROM parking_history WHERE TIME(updatetime) < TIME(?) AND TIME(updatetime) > TIME(?) AND garagecode = ?;', (f'{data["hour"]+1}:00:00', f'{data["hour"]}:00:00', i['name']))
-        closest[idx][1]['full'] = cur.fetchall()[0][0]
+        temp = {'name': p[0], 'lat': p[1], 'long': p[2], 'distance': d}
+        print(temp, (f'{data["hour"]+1}:00:00', f'{data["hour"]}:00:00', temp['name']))
 
-        cur.execute('SELECT totalspaces FROM parking_history WHERE garagecode = ? LIMIT 1;', (i['name'],))
-        closest[idx][1]['max_cars'] = cur.fetchall()[0][0]
+        cur.execute('SELECT AVG(vehiclecount*100/totalspaces) FROM parking_history WHERE TIME(updatetime) < TIME(?) AND TIME(updatetime) > TIME(?) AND garagecode = ?;', (f'{data["hour"]+1}:00:00', f'{data["hour"]}:00:00', temp['name']))
+        temp['full'] = cur.fetchall()[0][0]
 
-        cur.execute('SELECT COUNT(*) FROM parked_cars WHERE parking_id = (SELECT _id FROM parking_history WHERE garagecode = ? LIMIT 1)', (i['name'],))
-        closest[idx][1]['now_cars'] = cur.fetchall()[0][0]
+        cur.execute('SELECT totalspaces FROM parking_history WHERE garagecode = ? LIMIT 1;', (p[0],))
+        temp['max_cars'] = cur.fetchall()[0][0]
 
-        closest[idx][1]['address'] = gmaps.geocode(i['name'])[0]['formatted_address']
+        cur.execute('SELECT COUNT(*) FROM parked_cars WHERE parking_id = (SELECT _id FROM parking_history WHERE garagecode = ? LIMIT 1)', (p[0],))
+        temp['now_cars'] = cur.fetchall()[0][0]
 
-    return {'response': [i[1] for i in closest]}
+        temp['address'] = gmaps.geocode(p[0])[0]['formatted_address']
+
+        to_send.append(temp)
+
+    return {'response': to_send}
 
 @app.route('/park_car/<name>', methods=['GET'])
 def park_car(name):

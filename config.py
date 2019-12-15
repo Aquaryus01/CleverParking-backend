@@ -7,4 +7,3 @@ c = sqlite3.connect('Datasets/Parking/parking.sqlite', check_same_thread=False)
 cur = c.cursor()
 
 google_api_key = 'AIzaSyBEgEtjNunnLyyIBVO0ZlCh3gReySJZhkQ'
-parking = pandas.read_csv('Datasets/Parking/parking_locations.csv')
