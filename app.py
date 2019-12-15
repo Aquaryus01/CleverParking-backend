@@ -32,7 +32,6 @@ def find_nearest():
         d = calc_dist(data, {'lat': p[1], 'long': p[2]})
 
         temp = {'name': p[0], 'lat': p[1], 'long': p[2], 'distance': d}
-        print(temp, (f'{data["hour"]+1}:00:00', f'{data["hour"]}:00:00', temp['name']))
 
         cur.execute('SELECT AVG(vehiclecount*100/totalspaces) FROM parking_history WHERE TIME(updatetime) < TIME(?) AND TIME(updatetime) > TIME(?) AND garagecode = ?;', (f'{data["hour"]+1}:00:00', f'{data["hour"]}:00:00', temp['name']))
         temp['full'] = cur.fetchall()[0][0]
