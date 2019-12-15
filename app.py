@@ -33,8 +33,6 @@ def find_nearest():
         if [d, {'name': p['garagecode'], 'lat': p['lat'], 'long': p['long'], 'distance': d}] not in closest:
             closest.append([d, {'name': p['garagecode'], 'lat': p['lat'], 'long': p['long'], 'distance': d}])
 
-        closest = sorted(closest)[:3]
-
     for idx, (j, i) in enumerate(closest):
         cur.execute('SELECT AVG(vehiclecount*100/totalspaces) FROM parking_history WHERE TIME(updatetime) < TIME(?) AND TIME(updatetime) > TIME(?) AND garagecode = ?;', (f'{data["hour"]+1}:00:00', f'{data["hour"]}:00:00', i['name']))
         closest[idx][1]['full'] = cur.fetchall()[0][0]
